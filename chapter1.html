@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1 - C Arithmetic Operators</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sliding Sidebar Navigation -->
+    <nav id="sidebar">
+        <h2>Chapters</h2>
+        <ul>
+            <li><a href="index.html">Home / Intro</a></li>
+            <li><a href="chapter1.html">Chapter 1: Arithmetic Operators</a></li>
+            <li><a href="chapter2.html">Chapter 2: Basic Features</a></li> <!-- Update later -->
+            <li><a href="chapter3.html">Chapter 3: Advanced Techniques</a></li> <!-- Update later -->
+            <li><a href="chapter4.html">Chapter 4: Troubleshooting</a></li> <!-- Update later -->
+            <!-- Add more chapters as needed -->
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <h1>Chapter 1: C Arithmetic Operators</h1>
+
+        <p class="tutorial-paragraph">
+            Welcome to the first chapter of our C tutorial! In this section, we'll explore Arithmetic Operators. These are fundamental symbols used to perform mathematical calculations like addition, subtraction, multiplication, and division on numerical values (constants and variables).
+        </p>
+        <p class="tutorial-paragraph">
+            C provides several standard arithmetic operators that work much like they do in regular mathematics. Understanding these is crucial for writing programs that perform calculations. Let's look at the common ones. Click any paragraph to hear it read aloud.
+        </p>
+
+        <h2>Common Arithmetic Operators</h2>
+
+        <p class="tutorial-paragraph">
+            <strong>1. Addition (`+`):</strong> Adds two operands together.
+        </p>
+        <pre class="code-example"><code>#include <stdio.h>
+
+int main() {
+    int a = 10;
+    int b = 5;
+    int sum = a + b; // sum will be 15
+    printf("Sum: %d\n", sum); // Output: Sum: 15
+
+    float x = 2.5;
+    float y = 1.5;
+    float float_sum = x + y; // float_sum will be 4.0
+    printf("Float Sum: %.1f\n", float_sum); // Output: Float Sum: 4.0
+    return 0;
+}</code></pre>
+
+        <p class="tutorial-paragraph">
+            <strong>2. Subtraction (`-`):</strong> Subtracts the second operand from the first.
+        </p>
+        <pre class="code-example"><code>#include <stdio.h>
+
+int main() {
+    int a = 10;
+    int b = 5;
+    int difference = a - b; // difference will be 5
+    printf("Difference: %d\n", difference); // Output: Difference: 5
+    return 0;
+}</code></pre>
+
+        <p class="tutorial-paragraph">
+            <strong>3. Multiplication (`*`):</strong> Multiplies two operands.
+        </p>
+        <pre class="code-example"><code>#include <stdio.h>
+
+int main() {
+    int a = 10;
+    int b = 5;
+    int product = a * b; // product will be 50
+    printf("Product: %d\n", product); // Output: Product: 50
+    return 0;
+}</code></pre>
+
+        <p class="tutorial-paragraph">
+            <strong>4. Division (`/`):</strong> Divides the first operand by the second. Be careful with integer division! When both operands are integers, the result is also an integer, and any fractional part is discarded (truncated).
+        </p>
+        <pre class="code-example"><code>#include <stdio.h>
+
+int main() {
+    int a = 10;
+    int b = 5;
+    int int_quotient = a / b; // int_quotient will be 2
+    printf("Integer Quotient (10 / 5): %d\n", int_quotient); // Output: 2
+
+    int c = 10;
+    int d = 4;
+    int truncated_quotient = c / d; // truncated_quotient will be 2 (not 2.5)
+    printf("Truncated Quotient (10 / 4): %d\n", truncated_quotient); // Output: 2
+
+    // To get a floating-point result, at least one operand must be a float/double
+    float e = 10.0; // Make one a float
+    int f = 4;
+    float float_quotient = e / f; // float_quotient will be 2.5
+    printf("Float Quotient (10.0 / 4): %.1f\n", float_quotient); // Output: 2.5
+    return 0;
+}</code></pre>
+
+        <p class="tutorial-paragraph">
+            <strong>5. Modulus (`%`):</strong> Returns the remainder of an integer division. This operator only works with integer types.
+        </p>
+        <pre class="code-example"><code>#include <stdio.h>
+
+int main() {
+    int a = 10;
+    int b = 5;
+    int remainder1 = a % b; // remainder1 will be 0 (10 divides evenly by 5)
+    printf("Remainder (10 %% 5): %d\n", remainder1); // Output: 0 (Note: %% prints a literal %)
+
+    int c = 10;
+    int d = 4;
+    int remainder2 = c % d; // remainder2 will be 2 (10 / 4 is 2 with a remainder of 2)
+    printf("Remainder (10 %% 4): %d\n", remainder2); // Output: 2
+    return 0;
+}</code></pre>
+
+        <p class="tutorial-paragraph">
+            These operators follow standard mathematical precedence rules (multiplication, division, and modulus typically happen before addition and subtraction). You can use parentheses `()` to control the order of operations explicitly, just like in algebra.
+        </p>
+
+        <button id="start-learn-btn">Start to Learn</button>
+    </main>
+
+    <!-- Assistant Character HTML (Fixed Position) -->
+    <div id="tutor-assistant" class="assistant-sleeping" title="Click me for fun! Right-click to chat.">
+        <div class="assistant-body">
+            <div class="assistant-eye eye-left"></div>
+            <div class="assistant-eye eye-right"></div>
+            <div class="assistant-mouth"></div>
+        </div>
+    </div>
+
+    <!-- Chat Processing Status Indicator (Fixed Position) -->
+    <div id="processing-status" class="processing-indicator">
+        <span>Processing...</span>
+    </div>
+
+    <!-- Audio element for sound effects -->
+    <audio id="assistant-sound" src="sound-effect.mp3" preload="auto"></audio>
+
+    <!-- Main script file -->
+    <script src="script.js"></script>
+</body>
+</html>

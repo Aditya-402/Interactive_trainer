@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4 - Troubleshooting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sliding Sidebar Navigation -->
+    <nav id="sidebar">
+        <h2>Chapters</h2>
+        <ul>
+            <li><a href="index.html">Home / Intro</a></li>
+            <li><a href="chapter1.html">Chapter 1: Getting Started</a></li>
+            <li><a href="chapter2.html">Chapter 2: Basic Features</a></li>
+            <li><a href="chapter3.html">Chapter 3: Advanced Techniques</a></li>
+            <li><a href="chapter4.html">Chapter 4: Troubleshooting</a></li>
+            <!-- Add more chapters as needed -->
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <h1>Chapter 4: Troubleshooting</h1>
+
+        <p class="tutorial-paragraph">
+            Even with the best tools, sometimes things don't go as planned. This chapter covers common issues and how to resolve them. Click to hear the overview.
+        </p>
+        <p class="tutorial-paragraph">
+            Issue 1: Tool A appears greyed out. This usually happens if you haven't selected a compatible item first. Ensure your selection is correct.
+        </p>
+        <p class="tutorial-paragraph">
+            Issue 2: The output looks distorted after applying Filter C. Check the filter mode and intensity settings. Often, resetting the filter and reapplying it with lower intensity helps.
+        </p>
+        <p class="tutorial-paragraph">
+            If you encounter problems not listed here, try restarting the application or consulting the online documentation (link placeholder). You can also ask the assistant for help by right-clicking it.
+        </p>
+
+        <!-- Add Chapter 4 specific content here -->
+
+        <button id="start-learn-btn">Start to Learn</button>
+    </main>
+
+    <!-- Assistant Character HTML (Fixed Position) -->
+    <div id="tutor-assistant" class="assistant-sleeping" title="Click me for fun! Right-click to chat.">
+        <div class="assistant-body">
+            <div class="assistant-eye eye-left"></div>
+            <div class="assistant-eye eye-right"></div>
+            <div class="assistant-mouth"></div>
+        </div>
+    </div>
+
+    <!-- Chat Processing Status Indicator (Fixed Position) -->
+    <div id="processing-status" class="processing-indicator">
+        <span>Processing...</span>
+    </div>
+
+    <!-- Audio element for sound effects -->
+    <audio id="assistant-sound" src="sound-effect.mp3" preload="auto"></audio>
+
+    <!-- Main script file -->
+    <script src="script.js"></script>
+</body>
+</html>

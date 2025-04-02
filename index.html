@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Page with Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sliding Sidebar Navigation -->
+    <nav id="sidebar">
+        <h2>Chapters</h2>
+        <ul>
+            <!-- Replace # with actual chapter file names when created -->
+            <li><a href="index.html">Home / Intro</a></li>
+            <li><a href="chapter1.html">Chapter 1: Getting Started</a></li>
+            <li><a href="chapter2.html">Chapter 2: Basic Features</a></li>
+            <li><a href="chapter3.html">Chapter 3: Advanced Techniques</a></li>
+            <li><a href="chapter4.html">Chapter 4: Troubleshooting</a></li>
+            <!-- Add more chapters as needed -->
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <h1>My Awesome Tutorial</h1>
+
+        <p class="tutorial-paragraph">
+            This is the first paragraph. Assistants like this can guide users through complex steps by reading instructions aloud when clicked. Click me to hear this paragraph. Use the sidebar on the left to navigate chapters.
+        </p>
+        <p class="tutorial-paragraph">
+            Here is the second paragraph. Integrating Text-to-Speech and Speech-to-Text makes the learning experience more interactive and accessible. You can ask questions or request specific sections. Click me!
+        </p>
+        <p class="tutorial-paragraph">
+            This third paragraph demonstrates how different parts of the content can be made interactive. Click me to hear this read out loud using a high-quality voice! Remember to right-click the assistant character to start a chat.
+        </p>
+
+        <button id="start-learn-btn">Start to Learn</button>
+    </main>
+
+    <!-- Assistant Character HTML (Fixed Position) -->
+    <div id="tutor-assistant" class="assistant-sleeping" title="Click me for fun! Right-click to chat.">
+        <div class="assistant-body">
+            <div class="assistant-eye eye-left"></div>
+            <div class="assistant-eye eye-right"></div>
+            <div class="assistant-mouth"></div>
+        </div>
+    </div>
+
+    <!-- Chat Processing Status Indicator (Fixed Position) -->
+    <div id="processing-status" class="processing-indicator">
+        <span>Processing...</span>
+    </div>
+
+    <!-- Audio element for sound effects -->
+    <audio id="assistant-sound" src="sound-effect.mp3" preload="auto"></audio>
+
+    <!-- Main script file -->
+    <script src="script.js"></script>
+</body>
+</html>
