@@ -139,3 +139,4 @@ yarn.lock
 # Sensitive files
 chitti-*.json # Example: Service account keys
 *.pem
+google-cloud-credentials.json

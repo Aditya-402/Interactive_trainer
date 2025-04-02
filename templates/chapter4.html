@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 4 - Troubleshooting</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Updated CSS path -->
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
@@ -12,11 +13,12 @@
     <nav id="sidebar">
         <h2>Chapters</h2>
         <ul>
-            <li><a href="index.html">Home / Intro</a></li>
-            <li><a href="chapter1.html">Chapter 1: Getting Started</a></li>
-            <li><a href="chapter2.html">Chapter 2: Basic Features</a></li>
-            <li><a href="chapter3.html">Chapter 3: Advanced Techniques</a></li>
-            <li><a href="chapter4.html">Chapter 4: Troubleshooting</a></li>
+            <!-- Use root-relative URLs for navigation -->
+            <li><a href="/">Intro</a></li> <!-- Match index.html -->
+            <li><a href="/chapter/1">Chapter 1: Getting Started</a></li>
+            <li><a href="/chapter/2">Chapter 2: Basic Features</a></li>
+            <li><a href="/chapter/3">Chapter 3: Advanced Techniques</a></li>
+            <li><a href="/chapter/4">Chapter 4: Troubleshooting</a></li>
             <!-- Add more chapters as needed -->
         </ul>
     </nav>
@@ -57,10 +59,9 @@
         <span>Processing...</span>
     </div>
 
-    <!-- Audio element for sound effects -->
-    <audio id="assistant-sound" src="sound-effect.mp3" preload="auto"></audio>
+    <!-- Audio element for sound effects - Updated path -->
+    <audio id="assistant-sound" src="/static/sounds/sound-effect.mp3" preload="auto"></audio>
 
-    <!-- Main script file -->
-    <script src="script.js"></script>
+    <script type="module" src="/static/js/main.js"></script>
 </body>
 </html>
