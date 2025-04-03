@@ -138,4 +138,42 @@ export async function sendAudioBlobToChat(audioBlob) {
     }
 }
 
+/**
+ * Sends a user's query to the chapter-specific assistant endpoint.
+ * @param {number} chapterNumber The chapter number context.
+ * @param {string} query The user's text query.
+ * @returns {Promise<object>} Promise resolving to the response JSON (e.g., { reply: "..." }) or an error object ({ error: "..." }).
+ */
+export async function sendQueryToChapterAssistant(chapterNumber, query) {
+    const url = `${backendUrl}/api/ask_chapter_assistant/${chapterNumber}`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: query }),
+        });
+
+        if (!response.ok) {
+            let errorMsg = `HTTP error! status: ${response.status}`;
+            try {
+                const errData = await response.json();
+                errorMsg += `: ${errData.error || errData.reply || 'Unknown error'}`;
+            } catch (jsonError) {
+                // Ignore if response body is not JSON
+            }
+            console.error("Error sending query to chapter assistant:", errorMsg);
+            return { error: errorMsg };
+        }
+
+        const data = await response.json();
+        return data; // Expected format: { reply: "..." }
+
+    } catch (error) {
+        console.error("Network error sending query to chapter assistant:", error);
+        return { error: `Network error: ${error.message}` };
+    }
+}
+
 console.log("API Module loaded.");

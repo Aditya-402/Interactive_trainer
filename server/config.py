@@ -55,8 +55,8 @@ if IS_PRODUCTION:
     CORS_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "*").split(',') # Allow specific origins via env var, fallback to '*' cautiously
     print(f"INFO: Production CORS Origins: {CORS_ORIGINS}")
 else:
-    # Allow typical development server origins
-    CORS_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:5500"] # Add others if needed (e.g., different ports)
+    # Allow typical development server origins AND the browser preview proxy
+    CORS_ORIGINS = "*" # Allow any origin in development (simpler than managing changing proxy ports)
     print(f"INFO: Development CORS Origins: {CORS_ORIGINS}")
 
 
@@ -84,4 +84,3 @@ if not validate_config() and IS_PRODUCTION:
      # print("ERROR: Exiting due to missing critical configuration in production.")
      # exit(1)
      pass # Allow running even with missing config for now, but logged errors/warnings
-

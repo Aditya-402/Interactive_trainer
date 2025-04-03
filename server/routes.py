@@ -1,8 +1,15 @@
 import traceback
-from flask import Blueprint, jsonify, make_response, request, render_template, abort
+from flask import Blueprint, jsonify, make_response, request, render_template, abort, current_app
+import logging
+import time
+import os
+import google.generativeai as genai
 from google.cloud import speech # For encoding enums
 from . import clients # Import initialized clients and functions
 from . import config # Import configuration
+from .clients import synthesize_text as generate_speech, recognize_speech # Use correct TTS func name
+
+logger = logging.getLogger(__name__)
 
 # Create a Blueprint for API routes
 api_bp = Blueprint('api', __name__, url_prefix='/api')
@@ -56,6 +63,103 @@ def get_stt_encoding(mimetype, filename):
     return encoding
 
 
+# --- Gemini Configuration ---
+# Load API key (assuming dotenv loaded it via Config or app factory)
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+if not gemini_api_key:
+    logger.error("GEMINI_API_KEY not found in environment variables!")
+    # Handle the error appropriately - maybe raise an exception or exit
+else:
+    try:
+        genai.configure(api_key=gemini_api_key)
+    except Exception as e:
+        logger.error(f"Failed to configure Gemini API: {e}")
+
+generation_config = {
+    "temperature": 0.7, # Adjusted for more factual responses
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 2048, # Adjust as needed
+    "response_mime_type": "text/plain",
+}
+
+gemini_model = genai.GenerativeModel(
+    model_name="gemini-1.5-pro", # Or your preferred model
+    generation_config=generation_config,
+    system_instruction="Only respond from the the document provided. Do not use any external knowledge or information beyond the provided text. If the query cannot be answered from the document, respond exactly with 'NOT_IN_SCOPE'.",
+)
+
+# --- Gemini Session Cache ---
+gemini_sessions = {} # Key: chapter_num, Value: chat_session
+
+def wait_for_files_active(files):
+    """Waits for the given files to be active on Gemini API."""
+    logger.info("Waiting for Gemini file processing...")
+    try:
+        for name in (file.name for file in files):
+            file = genai.get_file(name)
+            while file.state.name == "PROCESSING":
+                logger.info(".", end="", flush=True)
+                time.sleep(5) # Reduced sleep time
+                file = genai.get_file(name)
+            if file.state.name != "ACTIVE":
+                logger.error(f"File {file.name} failed to process: {file.state.name}")
+                raise Exception(f"File {file.name} failed to process")
+        logger.info("...all files ready.")
+        return True
+    except Exception as e:
+        logger.error(f"Error waiting for file processing: {e}")
+        return False
+
+def get_or_create_gemini_session(chapter_num):
+    """Gets an existing Gemini session for the chapter or creates a new one."""
+    if chapter_num in gemini_sessions:
+        logger.info(f"Reusing existing Gemini session for chapter {chapter_num}")
+        return gemini_sessions[chapter_num]
+
+    logger.info(f"Creating new Gemini session for chapter {chapter_num}")
+    # Construct path assuming 'content' is at the root, relative to project dir
+    # This might need adjustment based on your exact execution context
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path = os.path.join(project_root, 'content', f'chapter{chapter_num}.txt')
+
+    if not os.path.exists(file_path):
+        logger.error(f"Content file not found: {file_path}")
+        return None # Indicate failure
+
+    try:
+        logger.info(f"Uploading {file_path} to Gemini...")
+        uploaded_file = genai.upload_file(file_path, mime_type="text/plain")
+        logger.info(f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}")
+
+        if not wait_for_files_active([uploaded_file]):
+            return None # Indicate failure
+
+        logger.info(f"Starting new chat session for chapter {chapter_num}...")
+        chat_session = gemini_model.start_chat(
+            history=[
+                {
+                    "role": "user",
+                    "parts": [uploaded_file],
+                },
+                # Optional: Add an initial assistant message if needed
+                # {
+                #     "role": "model",
+                #     "parts": ["I am ready to answer questions about this chapter."]
+                # }
+            ]
+        )
+        gemini_sessions[chapter_num] = chat_session
+        logger.info(f"Successfully created Gemini session for chapter {chapter_num}")
+        return chat_session
+
+    except Exception as e:
+        logger.error(f"Error creating Gemini session for chapter {chapter_num}: {e}")
+        # Clean up uploaded file if session creation failed?
+        # if 'uploaded_file' in locals() and uploaded_file:
+        #     try: genai.delete_file(uploaded_file.name) except: pass
+        return None # Indicate failure
+
 # --- API Endpoints ---
 
 @api_bp.route('/greet', methods=['POST'])
@@ -66,7 +170,7 @@ def get_greeting_speech():
     try:
         # Consider making the greeting text configurable
         greeting_text = "Hello! I'm active now. Click on any paragraph to hear it read aloud, or right-click me to chat."
-        audio_content, content_type = clients.synthesize_text(greeting_text)
+        audio_content, content_type = generate_speech(greeting_text)
 
         flask_response = make_response(audio_content)
         flask_response.headers['Content-Type'] = content_type
@@ -94,7 +198,7 @@ def speak_text():
         return make_error_response("'text' cannot be empty", 400)
 
     try:
-        audio_content, content_type = clients.synthesize_text(text_to_speak)
+        audio_content, content_type = generate_speech(text_to_speak)
         flask_response = make_response(audio_content)
         flask_response.headers['Content-Type'] = content_type
         return flask_response
@@ -196,6 +300,48 @@ def handle_chat():
         return make_error_response("Sorry, I had trouble processing that request. Please try again.", 500)
 
 
+@api_bp.route('/ask_chapter_assistant/<int:chapter_num>', methods=['POST'])
+def ask_chapter_assistant(chapter_num):
+    """Handles user queries for a specific chapter using Gemini."""
+    data = request.get_json()
+    if not data or 'query' not in data:
+        logger.warning("Missing 'query' in request to ask_chapter_assistant")
+        response_data = {"error": "Missing query"}
+        logger.debug(f"Returning response (missing query): {response_data}")
+        return jsonify(response_data), 400
+
+    user_query = data['query']
+    logger.info(f"Received query for chapter {chapter_num}: '{user_query[:50]}...'")
+
+    chat_session = get_or_create_gemini_session(chapter_num)
+
+    if chat_session is None:
+        logger.error(f"Failed to get/create Gemini session for chapter {chapter_num}")
+        response_data = {"reply_text": "Sorry, I couldn't prepare the context for this chapter. Please try again later."}
+        logger.debug(f"Returning response (session creation failed): {response_data}")
+        return jsonify(response_data), 503 # Service Unavailable
+
+    try:
+        logger.info(f"Sending query to Gemini session for chapter {chapter_num}...")
+        response = chat_session.send_message(user_query)
+        reply_text = response.text
+        logger.info(f"Received reply from Gemini for chapter {chapter_num}: '{reply_text[:50]}...'")
+
+        # Handle the specific 'NOT_IN_SCOPE' response
+        if reply_text.strip().upper() == "NOT_IN_SCOPE":
+            reply_text = "I can only answer questions based on the content of this chapter."
+
+        response_data = {"reply_text": reply_text}
+        logger.debug(f"Returning response (success): {response_data}")
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.error(f"Error querying Gemini for chapter {chapter_num}: {e}")
+        response_data = {"reply_text": "Sorry, I encountered an error while trying to answer your question."}
+        logger.debug(f"Returning response (Gemini error): {response_data}")
+        return jsonify(response_data), 500
+
+
 # Create a Blueprint for serving HTML files (non-API routes)
 html_bp = Blueprint('html', __name__)
 
@@ -206,7 +352,7 @@ def index():
     """Serves the main index.html page."""
     return render_template('index.html')
 
-@html_bp.route('/chapter<int:chapter_num>')
+@html_bp.route('/chapter/<int:chapter_num>') # Added slash for correct routing
 def chapter(chapter_num):
     """Serves chapter pages (chapter1.html, chapter2.html, etc.)."""
     # Validate chapter number if necessary (e.g., ensure it's within a known range)
@@ -219,4 +365,3 @@ def chapter(chapter_num):
     return render_template(template_name)
 
 # You could add more specific routes if needed, e.g., /about, /contact
-

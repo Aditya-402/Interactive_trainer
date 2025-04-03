@@ -81,7 +81,7 @@ body {
 #tutor-assistant {
     width: 100px;
     height: 100px;
-    position: relative;
+    position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 1100;
@@ -127,9 +127,38 @@ body {
     animation: wave-animation 0.5s ease-in-out infinite alternate;
 }
 
+#tutor-assistant.is-speaking .assistant-body {
+    /* Option 1: Static aura */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.7); /* Blue aura */
+
+    /* Option 2: Pulsating aura (use with keyframes above) */
+    /* animation: aura-pulse 2s infinite; */
+}
+
 #tutor-assistant.is-speaking .assistant-mouth {
     /* Example: Make mouth open and close slightly */
     animation: speak-mouth 0.3s infinite alternate;
+}
+
+#tutor-assistant.is-excited .assistant-body {
+    animation: excited-jumps 0.5s ease-in-out;
+}
+
+#tutor-assistant.is-confused .assistant-body {
+    animation: confused-tilt 1s ease-in-out;
+}
+
+#tutor-assistant.is-agreeing .assistant-body {
+    animation: agreeing-nod 1s ease-in-out;
+}
+
+#tutor-assistant.is-disapproving .assistant-body {
+    animation: disapproving-shake 0.5s ease-in-out;
+}
+
+#tutor-assistant.is-thinking .assistant-eye::after {
+    animation: thinking-eyes 1.5s infinite;
+    position: absolute; /* Override default */
 }
 
 /* Ensure sleeping state is defined - seems okay from view */
@@ -176,7 +205,7 @@ body {
     bottom: 25px; /* Default bottom position */
     width: 40px; /* Default width */
     height: 5px; /* Default height */
-    border-radius: 3px;
+    border-radius: 0 0 15px 15px; /* Curved bottom */
 }
 
 /* --- Chat Popup Modal --- */
@@ -316,7 +345,7 @@ body {
     pointer-events: none;
 }
 
-/* Keyframe animations (ensure they exist) */
+/* Keyframe animations */
 @keyframes blink {
     0%, 90%, 100% {
         height: 25px;
@@ -348,4 +377,48 @@ body {
         width: 35px;
         bottom: 22px;
     }
+}
+
+@keyframes aura-pulse {
+    0% { box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); }
+    50% { box-shadow: 0 0 15px rgba(0, 123, 255, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); }
+}
+
+@keyframes excited-jumps {
+    0% { transform: translateY(0); }
+    20% { transform: translateY(-8px); }
+    40% { transform: translateY(0); }
+    60% { transform: translateY(-5px); }
+    80% { transform: translateY(0); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes confused-tilt {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(0); }
+}
+
+@keyframes agreeing-nod {
+    0% { transform: rotateX(0); }
+    25% { transform: rotateX(10deg); }
+    75% { transform: rotateX(-10deg); }
+    100% { transform: rotateX(0); }
+}
+
+@keyframes disapproving-shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes thinking-eyes {
+    0% { left: 30%; }
+    25% { left: 70%; }
+    50% { left: 50%; }
+    75% { left: 20%; }
+    100% { left: 30%; }
 }

@@ -129,24 +129,39 @@ function handleAssistantRightClick(event) {
     showChatPopup();
 }
 
+const animations = [
+    'is-excited',
+    'is-confused',
+    'is-agreeing',
+    'is-disapproving',
+    'is-thinking'
+];
+
+function getRandomAnimation() {
+    const randomIndex = Math.floor(Math.random() * animations.length);
+    return animations[randomIndex];
+}
+
+function clearAnimations() {
+    animations.forEach(animation => assistant.classList.remove(animation));
+}
+
 /**
  * Handles left-clicking on the assistant for a fun animation.
  * @param {Event} event The click event.
  */
-function handleAssistantLeftClick(event) {
-    // Check if the click was part of a drag - basic check
-    // More robust check might involve comparing mouseup/mousedown positions
-    // or checking if a drag flag is set by the drag handler
-
+function handleAssistantLeftClick() {
     if (!assistantIsActive) return;
     console.log("Assistant left-clicked.");
 
-    // Optional: Prevent animation if speaking or listening?
-    // const isSpeaking = assistant.classList.contains('is-speaking');
-    // const isListening = assistant.classList.contains('is-listening');
-    // if (isSpeaking || isListening) return;
+    clearAnimations();
+    const randomAnimation = getRandomAnimation();
+    assistant.classList.add(randomAnimation);
 
-    triggerRandomAnimation();
+    // Remove the animation class after a short delay (to allow it to play)
+    setTimeout(() => {
+        assistant.classList.remove(randomAnimation);
+    }, 1000); // Adjust the duration as needed
 }
 
 /**

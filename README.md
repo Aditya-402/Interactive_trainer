@@ -7,7 +7,7 @@ This project is an interactive web-based tutorial application featuring a digita
 *   Chapter-based tutorial content.
 *   Sidebar navigation.
 *   Digital assistant that can read tutorial paragraphs aloud (Text-to-Speech).
-*   (Planned) Chat interaction with the assistant (Speech-to-Text and backend integration).
+*   Contextual chat assistant (per chapter) using Google Gemini for Q&A based on chapter content.
 
 ## Setup
 
@@ -35,10 +35,11 @@ This project is an interactive web-based tutorial application featuring a digita
     ```
 
 3.  **Configuration:**
-    *   Create a `.env` file in the root directory (or configure `server/config.py`) with your Google Cloud Project ID and the path to your service account key file:
+    *   Create a `.env` file in the root directory (or configure `server/config.py`) with your Google Cloud Project ID, the path to your service account key file, and Gemini API key:
         ```env
         GOOGLE_APPLICATION_CREDENTIALS="path/to/your/chitti-xxxx.json"
         GOOGLE_PROJECT_ID="your-gcp-project-id"
+        GEMINI_API_KEY="your-google-ai-gemini-api-key" # For chapter-specific Q&A
         ```
 
 4.  **Running the Application:**
@@ -55,6 +56,7 @@ This project is an interactive web-based tutorial application featuring a digita
     *   `js/`: Frontend JavaScript modules (UI interaction, API calls, assistant logic).
     *   `sounds/`: Sound effects.
 *   `templates/`: HTML templates for different pages/chapters.
+*   `content/`: Contains plain text files (`.txt`) corresponding to each chapter (e.g., `chapter1.txt`). Used as context for the Gemini assistant.
 *   `venv/`: Python virtual environment (if created).
 *   `.gitignore`: Specifies intentionally untracked files that Git should ignore.
 *   `requirements.txt`: Lists Python dependencies.

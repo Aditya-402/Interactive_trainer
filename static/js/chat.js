@@ -17,7 +17,7 @@ import {
     chatCloseBtn,
     chatDownloadBtn
 } from './ui.js';
-import { sendTextToChat, sendAudioBlobToChat, fetchTtsAudio } from './api.js';
+import { sendTextToChat, sendAudioBlobToChat, fetchTtsAudio, sendQueryToChapterAssistant } from './api.js';
 import { playAssistantSpeech, stopAssistantSpeech, isWebSpeechApiSupported, startBrowserListening, stopBrowserListening, isBrowserListeningActive, setBrowserSpeechCallbacks } from './speech.js';
 import { isMediaRecorderSupported, startRecording, stopRecording, isRecordingActive, setRecorderCallbacks } from './recorder.js';
 
@@ -160,13 +160,35 @@ function handleChatClose() {
 // --- Backend Interaction ---
 
 /**
+ * Extracts the chapter number from the current URL pathname.
+ * Assumes URLs like /chapter/1, /chapter/2, etc.
+ * Returns null if the URL format doesn't match.
+ */
+function getCurrentChapterNumber() {
+    const match = window.location.pathname.match(/\/chapter\/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+}
+
+/**
  * Processes a user's text message, sends it to the backend, and handles the response.
  * @param {string} textMessage The user's message.
  */
 async function processUserMessage(textMessage) {
     stopAssistantSpeech(); // Stop any current playback
     showProcessingIndicator();
-    const response = await sendTextToChat(textMessage);
+
+    const chapterNumber = getCurrentChapterNumber();
+    if (chapterNumber === null) {
+        hideProcessingIndicator();
+        appendMessage("Assistant", "Sorry, I can't determine the current chapter context.");
+        // Maybe speak this error?
+        return;
+    }
+
+    // --- NEW --- Call the chapter-specific endpoint
+    const response = await sendQueryToChapterAssistant(chapterNumber, textMessage);
+    // --- OLD --- const response = await sendTextToChat(textMessage);
+
     hideProcessingIndicator();
 
     if (response.error) {
